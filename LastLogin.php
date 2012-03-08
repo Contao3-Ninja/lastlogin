@@ -22,74 +22,74 @@
  * From TL 2.8 you can use prefix "cache_". Thus the InserTag will be not cached. (when "cache" is enabled)
  * 
  * Last Login:
- * {{last_login}}
- * {{last_login::d.m.Y}}
- * {{last_login::zero}}
- * {{last_login::zero::d.m.Y}}
+ * {{cache_last_login}}
+ * {{cache_last_login::d.m.Y}}
+ * {{cache_last_login::zero}}
+ * {{cache_last_login::zero::d.m.Y}}
  * 
  * Members Online:
  * Display of names separated by commas.
- * {{last_login_members_online}}
- * {{last_login_members_online::username}}
- * {{last_login_members_online::firstname}}
- * {{last_login_members_online::lastname}}
- * {{last_login_members_online::fullname}}
- * {{last_login_members_online::avatar}}  // funktioniert, macht aber keinen Sinn mit Komma dazwischen...
+ * {{cache_last_login_members_online}}
+ * {{cache_last_login_members_online::username}}
+ * {{cache_last_login_members_online::firstname}}
+ * {{cache_last_login_members_online::lastname}}
+ * {{cache_last_login_members_online::fullname}}
+ * {{cache_last_login_members_online::avatar}}  // funktioniert, macht aber keinen Sinn mit Komma dazwischen...
  * 
  * Display of names as unordered list.
- * {{last_login_members_online::list}}
- * {{last_login_members_online::username::list}}
- * {{last_login_members_online::firstname::list}}
- * {{last_login_members_online::lastname::list}}
- * {{last_login_members_online::fullname::list}}
- * {{last_login_members_online::avatar::list}}
- * {{last_login_members_online::avatar::list::5}}
+ * {{cache_last_login_members_online::list}}
+ * {{cache_last_login_members_online::username::list}}
+ * {{cache_last_login_members_online::firstname::list}}
+ * {{cache_last_login_members_online::lastname::list}}
+ * {{cache_last_login_members_online::fullname::list}}
+ * {{cache_last_login_members_online::avatar::list}}
+ * {{cache_last_login_members_online::avatar::list::5}}
  * 
  * Members Online linked (for Memberlist Module):
  * Display of names as unordered list linked 
  * (here: memberlist = alias name of page with memberlist module)
- * {{last_login_members_online_link::username::memberlist}}
- * {{last_login_members_online_link::firstname::memberlist}}
- * {{last_login_members_online_link::lastname::memberlist}}
- * {{last_login_members_online_link::fullname::memberlist}}
- * {{last_login_members_online_link::avatar::memberlist}}
- * {{last_login_members_online_link::avatar::memberlist::5}}
+ * {{cache_last_login_members_online_link::username::memberlist}}
+ * {{cache_last_login_members_online_link::firstname::memberlist}}
+ * {{cache_last_login_members_online_link::lastname::memberlist}}
+ * {{cache_last_login_members_online_link::fullname::memberlist}}
+ * {{cache_last_login_members_online_link::avatar::memberlist}}
+ * {{cache_last_login_members_online_link::avatar::memberlist::5}}
  * 
  * Display number of registered members
- * {{last_login_number_registered_members}}
+ * {{cache_last_login_number_registered_members}}
  * 
  * Display number of online members
- * {{last_login_number_online_members}}
+ * {{cache_last_login_number_online_members}}
  * 
  * Display number of offline members (logout today)
- * {{last_login_number_offline_members}}
+ * {{cache_last_login_number_offline_members}}
  * 
  * Members Offline:
  * Display of names separated by commas.
- * {{last_login_members_offline}}
- * {{last_login_members_offline::username}}
- * {{last_login_members_offline::firstname}}
- * {{last_login_members_offline::lastname}}
- * {{last_login_members_offline::fullname}}
- * {{last_login_members_offline::avatar}}  // funktioniert, macht aber keinen Sinn mit Komma dazwischen...
+ * {{cache_last_login_members_offline}}
+ * {{cache_last_login_members_offline::username}}
+ * {{cache_last_login_members_offline::firstname}}
+ * {{cache_last_login_members_offline::lastname}}
+ * {{cache_last_login_members_offline::fullname}}
+ * {{cache_last_login_members_offline::avatar}}  // funktioniert, macht aber keinen Sinn mit Komma dazwischen...
  * 
  * Display of names as unordered list.
- * {{last_login_members_offline::list}}
- * {{last_login_members_offline::username::list}}
- * {{last_login_members_offline::firstname::list}}
- * {{last_login_members_offline::lastname::list}}
- * {{last_login_members_offline::fullname::list}}
- * {{last_login_members_offline::avatar::list::5}}
+ * {{cache_last_login_members_offline::list}}
+ * {{cache_last_login_members_offline::username::list}}
+ * {{cache_last_login_members_offline::firstname::list}}
+ * {{cache_last_login_members_offline::lastname::list}}
+ * {{cache_last_login_members_offline::fullname::list}}
+ * {{cache_last_login_members_offline::avatar::list::5}}
  * 
  * Members Offline linked (for Memberlist Module)
  * Display of names as unordered list linked 
  * (here: memberlist = alias name of page with memberlist module)
- * {{last_login_members_offline_link::username::memberlist}}
- * {{last_login_members_offline_link::firstname::memberlist}}
- * {{last_login_members_offline_link::lastname::memberlist}}
- * {{last_login_members_offline_link::fullname::memberlist}}
- * {{last_login_members_offline_link::avatar::memberlist}}
- * {{last_login_members_offline_link::avatar::memberlist::5}}
+ * {{cache_last_login_members_offline_link::username::memberlist}}
+ * {{cache_last_login_members_offline_link::firstname::memberlist}}
+ * {{cache_last_login_members_offline_link::lastname::memberlist}}
+ * {{cache_last_login_members_offline_link::fullname::memberlist}}
+ * {{cache_last_login_members_offline_link::avatar::memberlist}}
+ * {{cache_last_login_members_offline_link::avatar::memberlist::5}}
  * 
  * 
  * @copyright  Glen Langer 2009..2012
@@ -195,7 +195,7 @@ class LastLogin extends Frontend
      * Insert-Tag: Last Login
      * @return mixed    false: FE user not logged in
      *                  string: return value of the Insert-Tag
-     * @access public
+     * @access private
      */
     private function LL_last_login ()
     {
@@ -213,8 +213,6 @@ class LastLogin extends Frontend
             $strDateFormat = $GLOBALS['TL_CONFIG']['dateFormat'];
             if ($this->User->id !== null) 
             {
-                // DB fragen, wenn kein Datum (Erster Login), dann aktuelles Datum = erster Login :-)
-                //$objLogin = $this->Database->prepare("SELECT logout_tstamp FROM tl_member WHERE id=?")
                 $objLogin = $this->Database->prepare("SELECT lastLogin FROM tl_member WHERE id=?")
                                  ->limit(1)
                                  ->execute($this->User->id);
@@ -224,12 +222,13 @@ class LastLogin extends Frontend
                 {
                     $zero = true;
                 }
-                // date Definition angegeben?
+                // date Definition angegeben und != zero?
                 if (isset($this->arrTag[1]) &&
                           $this->arrTag[1] != 'zero') 
                 {
                     $strDateFormat = $this->arrTag[1]; // date
                 }
+                // wenn zweiter Parameter, muss date Definition sein
                 if (isset($this->arrTag[2])) 
                 {
                     $strDateFormat = $this->arrTag[2]; // date
@@ -243,18 +242,11 @@ class LastLogin extends Frontend
                 elseif ($zero) 
                 {
                     $strDate = 0;
-                } else {
+                } 
+                else 
+                {
                     $strDate = date($strDateFormat);
                 }
-                /* D_E_B_U_G 
-                $this->log('Debug: START', 'Debug LastLogin', TL_CONFIGURATION );
-                $this->log('Debug: strTag='.$strTag, 'Debug LastLogin', TL_CONFIGURATION );
-                $this->log('Debug: User-ID='.$this->User->id, 'Debug LastLogin', TL_CONFIGURATION );
-                $this->log('Debug: lastlog='.$objLogin->lastLogin, 'Debug LastLogin', TL_CONFIGURATION );
-                $this->log('Debug: zero='.(int)$zero, 'Debug LastLogin', TL_CONFIGURATION );
-                $this->log('Debug: strDate='.$strDate, 'Debug LastLogin', TL_CONFIGURATION );
-                $this->log('Debug: ENDE', 'Debug LastLogin', TL_CONFIGURATION );
-                */
                 return $strDate;
             } //$this->User->id
         } //FE_USER_LOGGED_IN
@@ -265,7 +257,7 @@ class LastLogin extends Frontend
      * Insert-Tag: Last Login Members Online
      * @return mixed    false: FE user not logged in
      *                  string: return value of the Insert-Tag
-     * @access public
+     * @access private
      */
     private function LL_last_login_members_online ()
     {
@@ -314,7 +306,8 @@ class LastLogin extends Frontend
                     $llmo_name = 'tlm.username as name';
                     break;
             }
-            $objUsers = $this->Database->prepare("SELECT DISTINCT " . $llmo_name . ", publicFields" . $this->avatar .""
+            // alle die eine zeitlich gültige Session haben
+            $objUsers = $this->Database->prepare("SELECT DISTINCT tlm.id, " . $llmo_name . ", publicFields" . $this->avatar .""
                                                . " FROM tl_member tlm, tl_session tls" 
                                                . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?")
                                        ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
@@ -328,8 +321,7 @@ class LastLogin extends Frontend
                 while ($objUsers->next()) 
                 {
                     //auf Public Freigabe pruefen
-                    $publicFields = deserialize(
-                    $objUsers->publicFields, true);
+                    $publicFields = deserialize($objUsers->publicFields, true);
                     switch ($this->arrTag[1]) 
                     {
                         case 'id':
@@ -409,7 +401,7 @@ class LastLogin extends Frontend
      * Insert-Tag: Last Login Members Online Link
      * @return mixed    false: FE user not logged in
      *                  string: return value of the Insert-Tag
-     * @access public
+     * @access private
      */
     private function LL_last_login_members_online_link ()
     {
@@ -449,6 +441,7 @@ class LastLogin extends Frontend
                     $llmo_name_id = 'tlm.username as name, tlm.id as id';
                     break;
             }
+            // alle die eine zeitlich gültige Session haben
             $objUsers = $this->Database->prepare("SELECT DISTINCT " . $llmo_name_id . ", publicFields" . $this->avatar .""
                                                . " FROM tl_member tlm, tl_session tls" 
                                                . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?")
@@ -463,8 +456,7 @@ class LastLogin extends Frontend
                 while ($objUsers->next()) 
                 {
                     //auf Public Freigabe pruefen
-                    $publicFields = deserialize(
-                    $objUsers->publicFields, true);
+                    $publicFields = deserialize($objUsers->publicFields, true);
                     switch ($this->arrTag[1]) 
                     {
                         case 'id':
@@ -476,28 +468,24 @@ class LastLogin extends Frontend
                         case 'firstname':
                             if (in_array('firstname', $publicFields)) 
                             {
-                                $arrUser[] = array($objUsers->name, 
-                                $objUsers->id);
+                                $arrUser[] = array($objUsers->name, $objUsers->id);
                             }
                             break;
                         case 'lastname':
                             if (in_array('lastname', $publicFields)) 
                             {
-                                $arrUser[] = array($objUsers->name, 
-                                $objUsers->id);
+                                $arrUser[] = array($objUsers->name, $objUsers->id);
                             }
                             break;
                         case 'fullname':
                             if (in_array('firstname', $publicFields) &&
                                 in_array('lastname' , $publicFields)) 
                             {
-                                $arrUser[] = array($objUsers->name, 
-                                $objUsers->id);
+                                $arrUser[] = array($objUsers->name, $objUsers->id);
                             }
                             break;
                         case 'avatar':
-                            if (in_array('avatar', 
-                            $this->Config->getActiveModules())) 
+                            if (in_array('avatar', $this->Config->getActiveModules())) 
                             {
                                 //avatar Modul vorhanden
                                 //Umweg damit Default Bild kommt
@@ -556,9 +544,9 @@ class LastLogin extends Frontend
     }
 
     /**
-     * Insert-Tag: Last Login Number Registered Members
+     * Insert-Tag: Last Login Number Registered Members (aktiv, login allowed)
      * @return integer    number of registered members
-     * @access public
+     * @access private
      */
     private function LL_last_login_number_registered_members ()
     {
@@ -574,12 +562,13 @@ class LastLogin extends Frontend
     /**
      * Insert-Tag: Last Login Number Online Members
      * @return integer    number of online members
-     * @access public
+     * @access private
      */
     private function LL_last_login_number_online_members ()
     {
         //number of online members
         $this->import('Database');
+        // alle die eine zeitlich gültige Session haben
         $objUsers = $this->Database->prepare("SELECT count(DISTINCT username) AS ANZ" 
                                            . " FROM tl_member tlm, tl_session tls" 
                                            . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?")
@@ -597,38 +586,25 @@ class LastLogin extends Frontend
     /**
      * Insert-Tag: Last Login Number Offline Members
      * @return integer    number of offline members
-     * @access public 
+     * @access private 
      */
     private function LL_last_login_number_offline_members ()
     {
         //number of offline members
         $this->import('Database');
-        $llmo_name = 'tlm.username as name';
-        $llmo = 'tlm.username';
-        $objUsers = $this->Database->prepare("SELECT DISTINCT " . $llmo_name . ", publicFields" 
-                                           . " FROM tl_member tlm, tl_session tls" 
-                                           . " WHERE tlm.id=tls.pid AND tls.name=? AND tls.tstamp<?" . " UNION ALL" 
-                                           . " SELECT DISTINCT " . $llmo_name . ", publicFields" 
-                                           . " FROM tl_member tlm" 
-                                           . " WHERE (tlm.currentLogin<tlm.lastLogin) AND tlm.lastLogin BETWEEN ? AND ?" 
-                                           . " UNION ALL" . " SELECT DISTINCT " . $llmo_name . ", publicFields" 
-                                           . " FROM tl_member tlm" 
-                                           . " WHERE (tlm.currentLogin>tlm.lastLogin) AND (tlm.currentLogin>= ?)" 
-                                           . " AND " . $llmo . " NOT IN (" . " SELECT DISTINCT " . $llmo_name . "" 
-                                           . " FROM tl_member tlm, tl_session tls" 
-                                           . " WHERE tlm.id=tls.pid AND tls.name=? AND tls.tstamp>?)")
-                         ->execute('FE_USER_AUTH', time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 
-                                    mktime(0, 0, 0, date("m"), date("d"), date("Y")), time(), 
-                                    mktime(0, 0, 0, date("m"), date("d"), date("Y")), 'FE_USER_AUTH', 
-                                    time() - $GLOBALS['TL_CONFIG']['sessionTimeout']);
-        if ($objUsers->numRows < 1) 
-        {
-            $NumberMembersOffline = 0;
-        } 
-        else 
-        {
-            $NumberMembersOffline = $objUsers->numRows;
-        }
+        //$llmo_name = 'tlm.username as name';
+        $llmo = 'tlm.id';
+        // Alle (aktive) abzueglich alle die eine zeitlich gültige Session haben = offline
+        $objUsers = $this->Database->prepare("SELECT COUNT(" . $llmo . ") as ANZ FROM tl_member tlm "
+                                          . " WHERE `disable`!=? AND `login`=? AND " . $llmo . ""
+                                          . " NOT IN ("
+                                              . " SELECT " . $llmo . ""
+                                              . " FROM tl_member tlm, tl_session tls" 
+                                              . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?"
+                                              . " )"
+                                            )
+                                   ->execute(1,1,time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
+        $NumberMembersOffline = $objUsers->ANZ;
         return $NumberMembersOffline;
     }
 
@@ -636,7 +612,7 @@ class LastLogin extends Frontend
      * Insert-Tag: Last Login Members Offline
      * @return string    false: FE user not logged in
      *                   string: members offline
-     * @access public 
+     * @access private 
      */
     private function LL_last_login_members_offline ()
     {
@@ -666,53 +642,42 @@ class LastLogin extends Frontend
             {
                 case 'username':
                     $llmo_name = 'tlm.username as name';
-                    $llmo = 'tlm.username';
+                    $llmo = 'tlm.id';
                     break;
                 case 'firstname':
                     $llmo_name = 'tlm.firstname as name';
-                    $llmo = 'tlm.firstname';
+                    $llmo = 'tlm.id';
                     break;
                 case 'lastname':
                     $llmo_name = 'tlm.lastname as name';
-                    $llmo = 'tlm.lastname';
+                    $llmo = 'tlm.id';
                     break;
                 case 'fullname':
                     $llmo_name = 'CONCAT(tlm.firstname," ",tlm.lastname) as name';
-                    $llmo = 'CONCAT(tlm.firstname," ",tlm.lastname)';
+                    $llmo = 'tlm.id';
                     break;
                 default:
                     $llmo_name = 'tlm.username as name';
-                    $llmo = 'tlm.username';
+                    $llmo = 'tlm.id';
                     break;
             }
-            /*
-            * Nutzer die auszerhalb der Verfallszeit einer Session nichts mehr getan haben (also Session Inhaber, aber abgelaufen)
-            * Nutzer Heute oder Gestern online und heute offline durch abmelden
-            * Nutzer Heute online aber keine Session mehr, und nicht abgemeldet (aber Session geloescht)
-            */
-            $objUsers = $this->Database->prepare("SELECT DISTINCT " . $llmo_name . ", publicFields" . $this->avatar . "" 
-                    . " FROM tl_member tlm, tl_session tls" 
-                    . " WHERE tlm.id=tls.pid AND tls.name=? AND tls.tstamp<?" 
-                    . " UNION ALL" . " SELECT DISTINCT " . $llmo_name . ", publicFields" . $this->avatar . ""
-                    . " FROM tl_member tlm" 
-                    . " WHERE (tlm.currentLogin<tlm.lastLogin) AND tlm.lastLogin BETWEEN ? AND ?" 
-                    . " UNION ALL" 
-                    . " SELECT DISTINCT " . $llmo_name . ", publicFields" . $this->avatar . "" 
-                    . " FROM tl_member tlm" 
-                    . " WHERE (tlm.currentLogin>tlm.lastLogin) AND (tlm.currentLogin>= ?)" 
-                    . " AND " . $llmo . " NOT IN (" 
-                        . " SELECT DISTINCT " . $llmo_name . "" 
-                        . " FROM tl_member tlm, tl_session tls" 
-                        . " WHERE tlm.id=tls.pid AND tls.name=? AND tls.tstamp>?)"
-                    )
-                                       ->execute('FE_USER_AUTH', time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 
-                                                  mktime(0, 0, 0, date("m"), date("d"), date("Y")), time(), 
-                                                  mktime(0, 0, 0, date("m"), date("d"), date("Y")), 'FE_USER_AUTH', 
-                                                  time() - $GLOBALS['TL_CONFIG']['sessionTimeout']);
+            // Alle (aktive) abzueglich alle die eine zeitlich gültige Session haben = offline
+            $objUsers = $this->Database->prepare("SELECT " . $llmo_name . ", publicFields" . $this->avatar . ""
+                                              . " FROM tl_member tlm " 
+                                              . " WHERE `disable`!=? AND `login`=? AND " . $llmo . ""
+                                              . " NOT IN ("
+                                                . " SELECT " . $llmo . ""
+                                                . " FROM tl_member tlm, tl_session tls"
+                                                . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?"
+                                                . " )"
+                                                )
+                                        ->execute(1,1,time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
             if ($objUsers->numRows < 1) 
             {
                 $MembersOnline = $GLOBALS['TL_LANG']['last_login']['nobody'];
-            } else {
+            } 
+            else 
+            {
                 $arrUser = array();
                 while ($objUsers->next()) 
                 {
@@ -778,13 +743,13 @@ class LastLogin extends Frontend
                     {
                         $objTemplate->count = false;
                     }
-                    $objTemplate->users = array_unique($arrUser);
+                    $objTemplate->users = $arrUser; //array_unique($arrUser);
                     $MembersOnline = $objTemplate->parse();
                 } 
                 else 
                 {
                     // comma separated
-                    $MembersOnline = implode(', ', array_unique($arrUser));
+                    $MembersOnline = implode(', ', $arrUser); //implode(', ', array_unique($arrUser));
                 }
             }
             return $MembersOnline;
@@ -796,7 +761,7 @@ class LastLogin extends Frontend
      * Insert-Tag: Last Login Members Offline Link
      * @return string    false: FE user not logged in
      *                   string: members offline linked
-     * @access public
+     * @access private
      */
     private function LL_last_login_members_offline_link ()
     {
@@ -826,48 +791,36 @@ class LastLogin extends Frontend
             {
                 case 'username':
                     $llmo_name = 'tlm.username as name, tlm.id as id';
-                    $llmo = 'tlm.username';
+                    $llmo = 'tlm.id';
                     break;
                 case 'firstname':
                     $llmo_name = 'tlm.firstname as name, tlm.id as id';
-                    $llmo = 'tlm.firstname';
+                    $llmo = 'tlm.id';
                     break;
                 case 'lastname':
                     $llmo_name = 'tlm.lastname as name, tlm.id as id';
-                    $llmo = 'tlm.lastname';
+                    $llmo = 'tlm.id';
                     break;
                 case 'fullname':
                     $llmo_name = 'CONCAT(tlm.firstname," ",tlm.lastname) as name, tlm.id as id';
-                    $llmo = 'CONCAT(tlm.firstname," ",tlm.lastname)';
+                    $llmo = 'tlm.id';
                     break;
                 default:
                     $llmo_name = 'tlm.username as name, tlm.id as id';
-                    $llmo = 'tlm.username';
+                    $llmo = 'tlm.id';
                     break;
             }
-            /*
-            * Nutzer die auszerhalb der Verfallszeit einer Session nichts mehr getan haben (also Session Inhaber, aber abgelaufen)
-            * Nutzer Heute oder Gestern online und heute offline durch abmelden
-            * Nutzer Heute online aber keine Session mehr, und nicht abgemeldet (aber Session geloescht)
-            */
-            $objUsers = $this->Database->prepare("SELECT DISTINCT " . $llmo_name . ", publicFields" . $this->avatar . "" 
-                                . " FROM tl_member tlm, tl_session tls" 
-                                . " WHERE tlm.id=tls.pid AND tls.name=? AND tls.tstamp<?" 
-                                . " UNION ALL" . " SELECT DISTINCT " . $llmo_name . ", publicFields" . $this->avatar . "" 
-                                . " FROM tl_member tlm" 
-                                . " WHERE (tlm.currentLogin<tlm.lastLogin) AND tlm.lastLogin BETWEEN ? AND ?" 
-                                . " UNION ALL" . " SELECT DISTINCT " . $llmo_name . ", publicFields" . $this->avatar . "" 
-                                . " FROM tl_member tlm" 
-                                . " WHERE (tlm.currentLogin>tlm.lastLogin) AND (tlm.currentLogin>= ?)" 
-                                . " AND " . $llmo . " NOT IN (" 
-                                . " SELECT DISTINCT " . $llmo . "" 
-                                . " FROM tl_member tlm, tl_session tls" 
-                                . " WHERE tlm.id=tls.pid AND tls.name=? AND tls.tstamp>?)"
-                                )
-                             ->execute('FE_USER_AUTH', time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 
-                                        mktime(0, 0, 0, date("m"), date("d"), date("Y")), time(), 
-                                        mktime(0, 0, 0, date("m"), date("d"), date("Y")), 'FE_USER_AUTH', 
-                                        time() - $GLOBALS['TL_CONFIG']['sessionTimeout']);
+            // Alle (aktive) abzueglich alle die eine zeitlich gültige Session haben = offline
+            $objUsers = $this->Database->prepare("SELECT " . $llmo_name . ", publicFields" . $this->avatar . ""
+                                              . " FROM tl_member tlm "
+                                              . " WHERE `disable`!=? AND `login`=? AND " . $llmo . ""
+                                              . " NOT IN ("
+                                                . " SELECT " . $llmo . ""
+                                                . " FROM tl_member tlm, tl_session tls"
+                                                . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?"
+                                                . " )"
+                                                )
+                                        ->execute(1,1,time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
             if ($objUsers->numRows < 1) 
             {
                 $MembersOffline = $GLOBALS['TL_LANG']['last_login']['nobody'];
@@ -889,23 +842,20 @@ class LastLogin extends Frontend
                         case 'firstname':
                             if (in_array('firstname', $publicFields)) 
                             {
-                                $arrUser[] = array($objUsers->name, 
-                                $objUsers->id);
+                                $arrUser[] = array($objUsers->name, $objUsers->id);
                             }
                             break;
                         case 'lastname':
                             if (in_array('lastname', $publicFields)) 
                             {
-                                $arrUser[] = array($objUsers->name, 
-                                $objUsers->id);
+                                $arrUser[] = array($objUsers->name, $objUsers->id);
                             }
                             break;
                         case 'fullname':
                             if (in_array('firstname', $publicFields) &&
                                 in_array('lastname' , $publicFields)) 
                             {
-                                $arrUser[] = array($objUsers->name, 
-                                $objUsers->id);
+                                $arrUser[] = array($objUsers->name, $objUsers->id);
                             }
                             break;
                         case 'avatar':

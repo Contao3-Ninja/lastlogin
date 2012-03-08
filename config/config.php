@@ -6,11 +6,11 @@
  * Utility LastLogin - Config
  * 
  * PHP version 5
- * @copyright  Glen Langer 2011
+ * @copyright  Glen Langer 2012
  * @author     Glen Langer
  * @package    GLLastLogin
  * @license    LGPL
- * @version    1.8.0
+ * @version    1.9.0
  */
 
 /**
