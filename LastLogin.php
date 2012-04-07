@@ -13,7 +13,7 @@
  * @author     Glen Langer
  * @package    GLLastLogin
  * @license    LGPL
- * @version    1.9.0
+ * @version    1.9.1
  */
 
 /**
@@ -134,7 +134,7 @@ class LastLogin extends Frontend
         
         if (in_array('avatar', $this->Config->getActiveModules())) 
         {
-            $this->avatar = ',avatar'; //tested width avatar 1.0.1 stable
+            $this->avatar = ',avatar'; //tested with avatar 1.0.1 stable
         }
         
         if (FE_USER_LOGGED_IN) 
@@ -306,7 +306,7 @@ class LastLogin extends Frontend
                     $llmo_name = 'tlm.username as name';
                     break;
             }
-            // alle die eine zeitlich gültige Session haben
+            // alle die eine zeitlich gueltige Session haben
             $objUsers = $this->Database->prepare("SELECT DISTINCT tlm.id, " . $llmo_name . ", publicFields" . $this->avatar .""
                                                . " FROM tl_member tlm, tl_session tls" 
                                                . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?")
@@ -441,7 +441,7 @@ class LastLogin extends Frontend
                     $llmo_name_id = 'tlm.username as name, tlm.id as id';
                     break;
             }
-            // alle die eine zeitlich gültige Session haben
+            // alle die eine zeitlich gueltige Session haben
             $objUsers = $this->Database->prepare("SELECT DISTINCT " . $llmo_name_id . ", publicFields" . $this->avatar .""
                                                . " FROM tl_member tlm, tl_session tls" 
                                                . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?")
@@ -568,7 +568,7 @@ class LastLogin extends Frontend
     {
         //number of online members
         $this->import('Database');
-        // alle die eine zeitlich gültige Session haben
+        // alle die eine zeitlich gueltige Session haben
         $objUsers = $this->Database->prepare("SELECT count(DISTINCT username) AS ANZ" 
                                            . " FROM tl_member tlm, tl_session tls" 
                                            . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?")
@@ -591,10 +591,14 @@ class LastLogin extends Frontend
     private function LL_last_login_number_offline_members ()
     {
         //number of offline members
+        //die heute einmal Online waren und jetzt Offline sind (inaktiv oder heute abgemeldet)
         $this->import('Database');
         //$llmo_name = 'tlm.username as name';
         $llmo = 'tlm.id';
-        // Alle (aktive) abzueglich alle die eine zeitlich gültige Session haben = offline
+        // Alle (aktive) 
+        // abzueglich alle die eine zeitlich gueltige Session haben (online aktiv)
+        // abzueglich gestern oder aelter angemeldet und wieder abgemeldet (ohne Session)
+        // = offline members (lange inaktiv oder heute abgemeldet) 
         $objUsers = $this->Database->prepare("SELECT COUNT(" . $llmo . ") as ANZ FROM tl_member tlm "
                                           . " WHERE `disable`!=? AND `login`=? AND " . $llmo . ""
                                           . " NOT IN ("
@@ -602,8 +606,22 @@ class LastLogin extends Frontend
                                               . " FROM tl_member tlm, tl_session tls" 
                                               . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?"
                                               . " )"
+                                          . " AND " . $llmo . ""
+                                          . " NOT IN (" 
+                                              . " SELECT " . $llmo . ""
+                                              . " FROM tl_member tlm" 
+                                              . " WHERE tlm.currentLogin<= ?"
+                                              . " AND " . $llmo . ""
+                                              . " NOT IN (SELECT DISTINCT pid AS id FROM tl_session"
+                                                      . " WHERE name=?)"
+                                              . " )"
                                             )
-                                   ->execute(1,1,time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
+                                   ->execute(1,1
+                                            ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
+                                            ,'FE_USER_AUTH'
+                                            ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
+                                            ,'FE_USER_AUTH'
+                                           );
         $NumberMembersOffline = $objUsers->ANZ;
         return $NumberMembersOffline;
     }
@@ -661,7 +679,10 @@ class LastLogin extends Frontend
                     $llmo = 'tlm.id';
                     break;
             }
-            // Alle (aktive) abzueglich alle die eine zeitlich gültige Session haben = offline
+            // Alle (aktive) 
+            // abzueglich alle die eine zeitlich gueltige Session haben (online aktiv)
+            // abzueglich gestern oder aelter angemeldet und wieder abgemeldet (ohne Session)
+            // = offline members (lange inaktiv oder heute abgemeldet) 
             $objUsers = $this->Database->prepare("SELECT " . $llmo_name . ", publicFields" . $this->avatar . ""
                                               . " FROM tl_member tlm " 
                                               . " WHERE `disable`!=? AND `login`=? AND " . $llmo . ""
@@ -670,8 +691,22 @@ class LastLogin extends Frontend
                                                 . " FROM tl_member tlm, tl_session tls"
                                                 . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?"
                                                 . " )"
+                                              . " AND " . $llmo . ""
+                                              . " NOT IN (" 
+                                                  . " SELECT " . $llmo . ""
+                                                  . " FROM tl_member tlm" 
+                                                  . " WHERE tlm.currentLogin<= ?"
+                                                  . " AND " . $llmo . ""
+                                                  . " NOT IN (SELECT DISTINCT pid AS id FROM tl_session"
+                                                          . " WHERE name=?)"
+                                                  . " )"
                                                 )
-                                        ->execute(1,1,time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
+                                        ->execute(1,1
+                                                 ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
+                                                 ,'FE_USER_AUTH'
+                                                 ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
+                                                 ,'FE_USER_AUTH'
+                                                );
             if ($objUsers->numRows < 1) 
             {
                 $MembersOnline = $GLOBALS['TL_LANG']['last_login']['nobody'];
@@ -810,7 +845,10 @@ class LastLogin extends Frontend
                     $llmo = 'tlm.id';
                     break;
             }
-            // Alle (aktive) abzueglich alle die eine zeitlich gültige Session haben = offline
+            // Alle (aktive) 
+            // abzueglich alle die eine zeitlich gueltige Session haben (online aktiv)
+            // abzueglich gestern oder aelter angemeldet und wieder abgemeldet (ohne Session)
+            // = offline members (lange inaktiv oder heute abgemeldet) 
             $objUsers = $this->Database->prepare("SELECT " . $llmo_name . ", publicFields" . $this->avatar . ""
                                               . " FROM tl_member tlm "
                                               . " WHERE `disable`!=? AND `login`=? AND " . $llmo . ""
@@ -819,8 +857,22 @@ class LastLogin extends Frontend
                                                 . " FROM tl_member tlm, tl_session tls"
                                                 . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?"
                                                 . " )"
+                                              . " AND " . $llmo . ""
+                                              . " NOT IN (" 
+                                                  . " SELECT " . $llmo . ""
+                                                  . " FROM tl_member tlm" 
+                                                  . " WHERE tlm.currentLogin<= ?"
+                                                  . " AND " . $llmo . ""
+                                                  . " NOT IN (SELECT DISTINCT pid AS id FROM tl_session"
+                                                          . " WHERE name=?)"
+                                                  . " )"
                                                 )
-                                        ->execute(1,1,time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
+                                        ->execute(1,1
+                                                 ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
+                                                 ,'FE_USER_AUTH'
+                                                 ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
+                                                 ,'FE_USER_AUTH'
+                                                );
             if ($objUsers->numRows < 1) 
             {
                 $MembersOffline = $GLOBALS['TL_LANG']['last_login']['nobody'];
