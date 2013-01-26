@@ -1,4 +1,4 @@
-<?php if (!defined('TL_ROOT')) die('You can not access this file directly!');
+<?php 
 
 /**
  * Contao Open Source CMS
@@ -7,12 +7,13 @@
  * 
  * LastLogin language file (en).
  *
- * PHP version 5
- * @copyright  Glen Langer 2011
- * @author     Glen Langer
- * @package    GLLastLogin
+ * @copyright  Glen Langer 2013 <http://www.contao.glen-langer.de>
+ * @author     Glen Langer (BugBuster)
+ * @package    LastLogin
  * @license    LGPL
- * @version    1.8.0
+ * @version    3.0.0
+ * @filesource
+ * @see	       https://github.com/BugBuster1701/lastlogin
  */
 
 
@@ -23,4 +24,3 @@
 $GLOBALS['TL_LANG']['last_login']['nobody']  = 'Nobody';
 $GLOBALS['TL_LANG']['last_login']['profile'] = 'Profile view';
 
-?>
