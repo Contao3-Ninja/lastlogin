@@ -137,7 +137,7 @@ class LastLogin extends \Frontend
         
         if (in_array('avatar', $this->Config->getActiveModules())) 
         {
-            $this->avatar = ',avatar'; //tested with avatar 1.0.1 stable
+            $this->avatar = ',avatar'; //tested with avatar 2.0.4 stable
         }
         
         if (FE_USER_LOGGED_IN) 
@@ -373,9 +373,10 @@ class LastLogin extends \Frontend
                             if (in_array('avatar', $this->Config->getActiveModules())) 
                             {
                                 //avatar Modul vorhanden
-                                //Umweg damit Default Bild kommt
-                                $this->avatarFile = Avatar::filename($objUsers->avatar);
-                                $arrUser[] = Avatar::img($this->avatarFile);
+                                //$this->avatarFile = Avatar::filename($objUsers->avatar);
+                                //$arrUser[] = Avatar::img($this->avatarFile);
+                                // C3: in tl_member.avatar ist nun die ID des Bildes
+                                $arrUser[] = $this->replaceInsertTags("{{avatar::".$objUsers->id."}}", true);
                             }
                             break;
                         default:
@@ -517,10 +518,13 @@ class LastLogin extends \Frontend
                             if (in_array('avatar', $this->Config->getActiveModules())) 
                             {
                                 //avatar Modul vorhanden
-                                //Umweg damit Default Bild kommt
-                                $this->avatarFile = Avatar::filename($objUsers->avatar);
+                                //$this->avatarFile = Avatar::filename($objUsers->avatar);
                                 // username, id, Bild
-                                $arrUser[] = array($objUsers->name, $objUsers->id,Avatar::img($this->avatarFile));
+                                // C3: in tl_member.avatar ist nun die ID des Bildes
+                                $arrUser[] = array($objUsers->name, 
+                                                   $objUsers->id,
+                                                   $this->replaceInsertTags("{{avatar::".$objUsers->id."}}", true)
+                                                  );
                             }
                             break;
                         default:
@@ -846,9 +850,10 @@ class LastLogin extends \Frontend
                             if (in_array('avatar', $this->Config->getActiveModules())) 
                             {
                                 //avatar Modul vorhanden
-                                //Umweg damit Default Bild kommt
-                                $this->avatarFile = Avatar::filename($objUsers->avatar);
-                                $arrUser[] = Avatar::img($this->avatarFile);
+                                // C3: in tl_member.avatar ist nun die ID des Bildes
+                                //$this->avatarFile = Avatar::filename($objUsers->avatar);
+                                //$arrUser[] = Avatar::img($this->avatarFile);
+                                $arrUser[] = $this->replaceInsertTags("{{avatar::".$objUsers->id."}}", true);
                             }
                             break;
                         default:
@@ -1039,10 +1044,13 @@ class LastLogin extends \Frontend
                             if (in_array('avatar', $this->Config->getActiveModules())) 
                             {
                                 //avatar Modul vorhanden
-                                //Umweg damit Default Bild kommt
-                                $this->avatarFile = Avatar::filename($objUsers->avatar);
+                                //$this->avatarFile = Avatar::filename($objUsers->avatar);
                                 // username, id, Bild
-                                $arrUser[] = array($objUsers->name, $objUsers->id, Avatar::img($this->avatarFile));
+                                // C3: in tl_member.avatar ist nun die ID des Bildes
+                                $arrUser[] = array($objUsers->name, 
+                                                   $objUsers->id, 
+                                                   $this->replaceInsertTags("{{avatar::".$objUsers->id."}}", true)
+                                                  );
                             }
                             break;
                         default:
