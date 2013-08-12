@@ -9,7 +9,7 @@
  * @author     Glen Langer (BugBuster)
  * @package    LastLogin
  * @license    LGPL
- * @version    3.0.0
+ * @version    3.1.0
  * @filesource
  * @see	       https://github.com/BugBuster1701/lastlogin
  */
@@ -192,7 +192,7 @@ class LastLogin extends \Frontend
                 //not for me
                 return false;
         }
-    } //function LLreplaceInsertTags
+    } //function ReplaceInsertTagsLastLogin
 
     /**
      * Insert-Tag: Last Login
@@ -215,9 +215,16 @@ class LastLogin extends \Frontend
             $strDateFormat = $GLOBALS['TL_CONFIG']['dateFormat'];
             if ($this->User->id !== null) 
             {
-                $objLogin = \Database::getInstance()->prepare("SELECT lastLogin FROM tl_member WHERE id=?")
-                                                    ->limit(1)
-                                                    ->execute($this->User->id);
+                $objLogin = \Database::getInstance()
+                                ->prepare("SELECT 
+                                                lastLogin 
+                                            FROM 
+                                                tl_member 
+                                            WHERE 
+                                                id = ?
+                                        ")
+                                ->limit(1)
+                                ->execute($this->User->id);
                 // zero Parameter angegeben? 
                 if (isset($this->arrTag[1]) &&
                           $this->arrTag[1] == 'zero') 
@@ -308,10 +315,22 @@ class LastLogin extends \Frontend
                     break;
             }
             // alle die eine zeitlich gueltige Session haben
-            $objUsers = \Database::getInstance()->prepare("SELECT DISTINCT tlm.id, " . $llmo_name . ", publicFields" . $this->avatar ."
-                                                           FROM tl_member tlm, tl_session tls 
-                                                           WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?")
-                                                ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
+            $objUsers = \Database::getInstance()
+                            ->prepare("SELECT DISTINCT 
+                                            tlm.id, 
+                                            " . $llmo_name . ", 
+                                            publicFields" . $this->avatar ."
+                                       FROM 
+                                            tl_member tlm, 
+                                            tl_session tls 
+                                       WHERE 
+                                            tlm.id=tls.pid 
+                                        AND 
+                                            tls.tstamp > ? 
+                                        AND 
+                                            tls.name = ?
+                                    ")
+                            ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
             if ($objUsers->numRows < 1) 
             {
                 $MembersOnline = $GLOBALS['TL_LANG']['last_login']['nobody'];
@@ -442,10 +461,20 @@ class LastLogin extends \Frontend
                     break;
             }
             // alle die eine zeitlich gueltige Session haben
-            $objUsers = \Database::getInstance()->prepare("SELECT DISTINCT " . $llmo_name_id . ", publicFields" . $this->avatar ."
-                                                           FROM tl_member tlm, tl_session tls 
-                                                           WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?")
-                                                ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
+            $objUsers = \Database::getInstance()
+                            ->prepare("SELECT DISTINCT 
+                                            " . $llmo_name_id . ", 
+                                            publicFields" . $this->avatar ."
+                                       FROM 
+                                            tl_member tlm, 
+                                            tl_session tls 
+                                       WHERE 
+                                            tlm.id=tls.pid 
+                                        AND 
+                                            tls.tstamp > ? 
+                                        AND tls.name = ?
+                                    ")
+                            ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
             if ($objUsers->numRows < 1) 
             {
                 $MembersOnline = $GLOBALS['TL_LANG']['last_login']['nobody'];
@@ -551,10 +580,18 @@ class LastLogin extends \Frontend
     private function LL_last_login_number_registered_members ()
     {
         //number of registered members
-        $objLogin = \Database::getInstance()->prepare("SELECT count(`id`) AS ANZ FROM `tl_member` 
-                                                       WHERE `disable`!=? AND `login`=?")
-                                            ->limit(1)
-                                            ->execute(1, 1);
+        $objLogin = \Database::getInstance()
+                        ->prepare("SELECT 
+                                        count(`id`) AS ANZ 
+                                    FROM 
+                                        `tl_member` 
+                                    WHERE 
+                                        `disable` != ? 
+                                    AND 
+                                        `login` = ?
+                                ")
+                        ->limit(1)
+                        ->execute(1, 1);
         return $objLogin->ANZ;
     }
 
@@ -567,11 +604,21 @@ class LastLogin extends \Frontend
     {
         //number of online members
         // alle die eine zeitlich gueltige Session haben
-        $objUsers = \Database::getInstance()->prepare("SELECT count(DISTINCT username) AS ANZ 
-                                                       FROM tl_member tlm, tl_session tls
-                                                       WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?")
-                                            ->limit(1)
-                                            ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
+        $objUsers = \Database::getInstance()
+                        ->prepare("SELECT 
+                                        count(DISTINCT username) AS ANZ 
+                                   FROM 
+                                        tl_member tlm, 
+                                        tl_session tls
+                                   WHERE 
+                                        tlm.id=tls.pid 
+                                   AND 
+                                        tls.tstamp > ? 
+                                   AND 
+                                        tls.name = ?
+                                ")
+                        ->limit(1)
+                        ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
         if ($objUsers->numRows < 1) 
         {
             $NumberMembersOnline = 0;
@@ -596,29 +643,56 @@ class LastLogin extends \Frontend
         // abzueglich alle die eine zeitlich gueltige Session haben (online aktiv)
         // abzueglich gestern oder aelter angemeldet und wieder abgemeldet (ohne Session)
         // = offline members (lange inaktiv oder heute abgemeldet) 
-        $objUsers = \Database::getInstance()->prepare("SELECT COUNT(" . $llmo . ") as ANZ FROM tl_member tlm 
-                                           WHERE `disable`!=? AND `login`=? AND " . $llmo . "
-                                           NOT IN (
-                                               SELECT " . $llmo . "
-                                               FROM tl_member tlm, tl_session tls 
-                                               WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?
-                                               )
-                                           AND " . $llmo . "
-                                           NOT IN ( 
-                                               SELECT " . $llmo . "
-                                               FROM tl_member tlm 
-                                               WHERE tlm.currentLogin<= ?
-                                               AND " . $llmo . "
-                                               NOT IN (SELECT DISTINCT pid AS id FROM tl_session
-                                                       WHERE name=?)
-                                               )"
+        $objUsers = \Database::getInstance()
+                        ->prepare("SELECT 
+                                        COUNT(" . $llmo . ") as ANZ 
+                                    FROM 
+                                        tl_member tlm 
+                                    WHERE 
+                                        `disable` != ? 
+                                    AND 
+                                        `login` = ? 
+                                    AND 
+                                        " . $llmo . "  NOT IN 
+                                        (
+                                        SELECT 
+                                            " . $llmo . "
+                                        FROM 
+                                            tl_member tlm, 
+                                            tl_session tls 
+                                        WHERE 
+                                            tlm.id=tls.pid 
+                                        AND 
+                                            tls.tstamp > ? 
+                                        AND 
+                                            tls.name = ?
+                                        )
+                                   AND 
+                                        " . $llmo . "  NOT IN 
+                                        ( 
+                                        SELECT 
+                                            " . $llmo . "
+                                        FROM 
+                                            tl_member tlm 
+                                        WHERE 
+                                            tlm.currentLogin <= ?
+                                        AND 
+                                            " . $llmo . "  NOT IN 
+                                            (
+                                            SELECT DISTINCT pid AS id 
+                                            FROM 
+                                                tl_session
+                                            WHERE 
+                                                name = ?
                                             )
-                                   ->execute(1,1
-                                            ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
-                                            ,'FE_USER_AUTH'
-                                            ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
-                                            ,'FE_USER_AUTH'
-                                           );
+                                        )
+                                    ")
+                        ->execute(1,1
+                                ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
+                                ,'FE_USER_AUTH'
+                                ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
+                                ,'FE_USER_AUTH'
+                               );
         $NumberMembersOffline = $objUsers->ANZ;
         return $NumberMembersOffline;
     }
@@ -679,30 +753,58 @@ class LastLogin extends \Frontend
             // abzueglich alle die eine zeitlich gueltige Session haben (online aktiv)
             // abzueglich gestern oder aelter angemeldet und wieder abgemeldet (ohne Session)
             // = offline members (lange inaktiv oder heute abgemeldet) 
-            $objUsers = \Database::getInstance()->prepare("SELECT " . $llmo_name . ", publicFields" . $this->avatar . "
-                                               FROM tl_member tlm 
-                                               WHERE `disable`!=? AND `login`=? AND " . $llmo . "
-                                               NOT IN (
-                                                   SELECT " . $llmo . "
-                                                   FROM tl_member tlm, tl_session tls
-                                                   WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?
-                                                   )
-                                               AND " . $llmo . "
-                                               NOT IN ( 
-                                                   SELECT " . $llmo . "
-                                                   FROM tl_member tlm 
-                                                   WHERE tlm.currentLogin<= ?
-                                                   AND " . $llmo . "
-                                                   NOT IN (SELECT DISTINCT pid AS id FROM tl_session
-                                                           WHERE name=?)
-                                                   )"
+            $objUsers = \Database::getInstance()
+                            ->prepare("SELECT 
+                                            " . $llmo_name . ", 
+                                            publicFields" . $this->avatar . "
+                                        FROM 
+                                            tl_member tlm 
+                                        WHERE 
+                                            `disable` != ? 
+                                        AND 
+                                            `login` = ? 
+                                        AND 
+                                            " . $llmo . "  NOT IN 
+                                            (
+                                            SELECT 
+                                                " . $llmo . "
+                                            FROM 
+                                                tl_member tlm, 
+                                                tl_session tls
+                                            WHERE 
+                                                tlm.id=tls.pid 
+                                            AND 
+                                                tls.tstamp > ? 
+                                            AND 
+                                                tls.name = ?
+                                           )
+                                        AND 
+                                            " . $llmo . "  NOT IN 
+                                            ( 
+                                            SELECT 
+                                                " . $llmo . "
+                                            FROM 
+                                                tl_member tlm 
+                                            WHERE 
+                                                tlm.currentLogin <= ?
+                                            AND 
+                                                " . $llmo . "  NOT IN 
+                                                (
+                                                    SELECT DISTINCT 
+                                                        pid AS id 
+                                                    FROM 
+                                                        tl_session
+                                                    WHERE 
+                                                        name = ?
                                                 )
-                                        ->execute(1,1
-                                                 ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
-                                                 ,'FE_USER_AUTH'
-                                                 ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
-                                                 ,'FE_USER_AUTH'
-                                                );
+                                            )
+                                        ")
+                            ->execute(1,1
+                                     ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
+                                     ,'FE_USER_AUTH'
+                                     ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
+                                     ,'FE_USER_AUTH'
+                                    );
             if ($objUsers->numRows < 1) 
             {
                 $MembersOnline = $GLOBALS['TL_LANG']['last_login']['nobody'];
@@ -844,30 +946,58 @@ class LastLogin extends \Frontend
             // abzueglich alle die eine zeitlich gueltige Session haben (online aktiv)
             // abzueglich gestern oder aelter angemeldet und wieder abgemeldet (ohne Session)
             // = offline members (lange inaktiv oder heute abgemeldet) 
-            $objUsers = \Database::getInstance()->prepare("SELECT " . $llmo_name . ", publicFields" . $this->avatar . "
-                                               FROM tl_member tlm 
-                                               WHERE `disable`!=? AND `login`=? AND " . $llmo . "
-                                               NOT IN (
-                                                   SELECT " . $llmo . "
-                                                   FROM tl_member tlm, tl_session tls
-                                                   WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?
-                                                   )
-                                               AND " . $llmo . "
-                                               NOT IN (
-                                                   SELECT " . $llmo . "
-                                                   FROM tl_member tlm 
-                                                   WHERE tlm.currentLogin<= ?
-                                                   AND " . $llmo . "
-                                                   NOT IN (SELECT DISTINCT pid AS id FROM tl_session
-                                                           WHERE name=?)
-                                                   )"
-                                                )
-                                        ->execute(1,1
-                                                 ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
-                                                 ,'FE_USER_AUTH'
-                                                 ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
-                                                 ,'FE_USER_AUTH'
-                                                );
+            $objUsers = \Database::getInstance()
+                            ->prepare("SELECT 
+                                            " . $llmo_name . ", 
+                                            publicFields" . $this->avatar . "
+                                        FROM 
+                                            tl_member tlm 
+                                        WHERE 
+                                            `disable` != ? 
+                                        AND 
+                                            `login` = ? 
+                                        AND 
+                                            " . $llmo . "  NOT IN 
+                                            (
+                                                SELECT 
+                                                    " . $llmo . "
+                                                FROM 
+                                                    tl_member tlm, 
+                                                    tl_session tls
+                                                WHERE 
+                                                    tlm.id=tls.pid 
+                                                AND 
+                                                    tls.tstamp > ? 
+                                                AND 
+                                                    tls.name = ?
+                                            )
+                                        AND 
+                                            " . $llmo . "  NOT IN 
+                                            (
+                                                SELECT 
+                                                    " . $llmo . "
+                                                FROM 
+                                                    tl_member tlm 
+                                                WHERE 
+                                                    tlm.currentLogin<= ?
+                                                AND 
+                                                    " . $llmo . "  NOT IN 
+                                                    (
+                                                        SELECT DISTINCT 
+                                                            pid AS id 
+                                                        FROM 
+                                                            tl_session
+                                                        WHERE 
+                                                            name = ?
+                                                    )
+                                           )
+                                        ")
+                            ->execute(1,1
+                                     ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
+                                     ,'FE_USER_AUTH'
+                                     ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
+                                     ,'FE_USER_AUTH'
+                                    );
             if ($objUsers->numRows < 1) 
             {
                 $MembersOffline = $GLOBALS['TL_LANG']['last_login']['nobody'];
