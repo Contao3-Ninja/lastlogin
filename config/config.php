@@ -1,22 +1,23 @@
-<?php if (!defined('TL_ROOT')) die('You can not access this file directly!');
+<?php 
 
 /**
- * Contao Open Source CMS
- * 
+ * Contao Open Source CMS, Copyright (C) 2005-2013 Leo Feyer
+ *
  * Utility LastLogin - Config
  * 
- * PHP version 5
- * @copyright  Glen Langer 2012
- * @author     Glen Langer
- * @package    GLLastLogin
+ * @copyright  Glen Langer 2013 <http://www.contao.glen-langer.de>
+ * @author     Glen Langer (BugBuster)
+ * @package    LastLogin
  * @license    LGPL
- * @version    1.9.0
+ * @version    3.0.0
+ * @filesource
+ * @see	       https://github.com/BugBuster1701/lastlogin
  */
 
 /**
  * Register hook functions
  */
-$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('LastLogin', 'LLreplaceInsertTags');
+$GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('LastLogin\LastLogin', 'ReplaceInsertTagsLastLogin');
 
 
 /**
@@ -28,4 +29,3 @@ $GLOBALS['TL_HOOKS']['replaceInsertTags'][] = array('LastLogin', 'LLreplaceInser
  * 
  */
 
-?>

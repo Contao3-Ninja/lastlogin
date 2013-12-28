@@ -1,25 +1,28 @@
-<?php if (!defined('TL_ROOT')) die('You can not access this file directly!');
+<?php 
 
 /**
- * Contao Open Source CMS
- * Copyright (C) 2005-2012 Leo Feyer
+ * Contao Open Source CMS, Copyright (C) 2005-2013 Leo Feyer
  *
- * Formerly known as TYPOlight Open Source CMS.
- * 
  * Utility LastLogin
  *
- * PHP version 5
- * @copyright  Glen Langer 2012
- * @author     Glen Langer
- * @package    GLLastLogin
+ * @copyright  Glen Langer 2013 <http://www.contao.glen-langer.de>
+ * @author     Glen Langer (BugBuster)
+ * @package    LastLogin
  * @license    LGPL
- * @version    1.9.1
+ * @version    3.1.0
+ * @filesource
+ * @see	       https://github.com/BugBuster1701/lastlogin
  */
+
+/**
+ * Run in a custom namespace, so the class can be replaced
+ */
+namespace BugBuster\LastLogin;
 
 /**
  * Class LastLogin
  * 
- * From TL 2.8 you can use prefix "cache_". Thus the InserTag will be not cached. (when "cache" is enabled)
+ * From TL 2.8 you can use prefix "cache_". The InserTag will be not cached nows. (when "cache" is enabled)
  * 
  * Last Login:
  * {{cache_last_login}}
@@ -92,11 +95,11 @@
  * {{cache_last_login_members_offline_link::avatar::memberlist::5}}
  * 
  * 
- * @copyright  Glen Langer 2009..2012
- * @author     Glen Langer
- * @package    GLLastLogin
+ * @copyright  Glen Langer 2013 <http://www.contao.glen-langer.de>
+ * @author     Glen Langer (BugBuster)
+ * @package    LastLogin
  */
-class LastLogin extends Frontend
+class LastLogin extends \Frontend
 {
     /**
      * Array with splitted Tag parts
@@ -123,7 +126,7 @@ class LastLogin extends Frontend
      *                  string: return value of the Insert-Tag
      * @access public
      */
-    public function LLreplaceInsertTags ($strTag)
+    public function ReplaceInsertTagsLastLogin($strTag)
     {
         if (!in_array('memberlist', $this->Config->getActiveModules())) 
         {
@@ -134,7 +137,7 @@ class LastLogin extends Frontend
         
         if (in_array('avatar', $this->Config->getActiveModules())) 
         {
-            $this->avatar = ',avatar'; //tested with avatar 1.0.1 stable
+            $this->avatar = ',avatar'; //tested with avatar 2.0.4 stable
         }
         
         if (FE_USER_LOGGED_IN) 
@@ -189,7 +192,7 @@ class LastLogin extends Frontend
                 //not for me
                 return false;
         }
-    } //function LLreplaceInsertTags
+    } //function ReplaceInsertTagsLastLogin
 
     /**
      * Insert-Tag: Last Login
@@ -207,15 +210,21 @@ class LastLogin extends Frontend
         if (FE_USER_LOGGED_IN) 
         {
             $this->import('FrontendUser', 'User');
-            $this->import('Database');
             $strDate = '';
             $zero = false;
             $strDateFormat = $GLOBALS['TL_CONFIG']['dateFormat'];
             if ($this->User->id !== null) 
             {
-                $objLogin = $this->Database->prepare("SELECT lastLogin FROM tl_member WHERE id=?")
-                                 ->limit(1)
-                                 ->execute($this->User->id);
+                $objLogin = \Database::getInstance()
+                                ->prepare("SELECT 
+                                                lastLogin 
+                                            FROM 
+                                                tl_member 
+                                            WHERE 
+                                                id = ?
+                                        ")
+                                ->limit(1)
+                                ->execute($this->User->id);
                 // zero Parameter angegeben? 
                 if (isset($this->arrTag[1]) &&
                           $this->arrTag[1] == 'zero') 
@@ -264,7 +273,6 @@ class LastLogin extends Frontend
         //members online
         if ($this->login_check) 
         {
-            $this->import('Database');
             $this->loadLanguageFile('tl_last_login');
             $this->import('FrontendUser', 'User');
             // ::id
@@ -307,10 +315,22 @@ class LastLogin extends Frontend
                     break;
             }
             // alle die eine zeitlich gueltige Session haben
-            $objUsers = $this->Database->prepare("SELECT DISTINCT tlm.id, " . $llmo_name . ", publicFields" . $this->avatar .""
-                                               . " FROM tl_member tlm, tl_session tls" 
-                                               . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?")
-                                       ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
+            $objUsers = \Database::getInstance()
+                            ->prepare("SELECT DISTINCT 
+                                            tlm.id, 
+                                            " . $llmo_name . ", 
+                                            publicFields" . $this->avatar ."
+                                       FROM 
+                                            tl_member tlm, 
+                                            tl_session tls 
+                                       WHERE 
+                                            tlm.id=tls.pid 
+                                        AND 
+                                            tls.tstamp > ? 
+                                        AND 
+                                            tls.name = ?
+                                    ")
+                            ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
             if ($objUsers->numRows < 1) 
             {
                 $MembersOnline = $GLOBALS['TL_LANG']['last_login']['nobody'];
@@ -353,9 +373,10 @@ class LastLogin extends Frontend
                             if (in_array('avatar', $this->Config->getActiveModules())) 
                             {
                                 //avatar Modul vorhanden
-                                //Umweg damit Default Bild kommt
-                                $this->avatarFile = Avatar::filename($objUsers->avatar);
-                                $arrUser[] = Avatar::img($this->avatarFile);
+                                //$this->avatarFile = Avatar::filename($objUsers->avatar);
+                                //$arrUser[] = Avatar::img($this->avatarFile);
+                                // C3: in tl_member.avatar ist nun die ID des Bildes
+                                $arrUser[] = $this->replaceInsertTags("{{avatar::".$objUsers->id."}}", true);
                             }
                             break;
                         default:
@@ -374,7 +395,7 @@ class LastLogin extends Frontend
                       </ul>
                     </div>
                     */
-                    $objTemplate = new FrontendTemplate('mod_last_login_members');
+                    $objTemplate = new \FrontendTemplate('mod_last_login_members');
                     $objTemplate->users = $arrUser;
                     if (isset($this->arrTag[3])) 
                     {
@@ -408,7 +429,6 @@ class LastLogin extends Frontend
         //members online link
         if ($this->login_check) 
         {
-            $this->import('Database');
             $this->loadLanguageFile('tl_last_login');
             $this->import('FrontendUser', 'User');
             // ::username
@@ -442,10 +462,20 @@ class LastLogin extends Frontend
                     break;
             }
             // alle die eine zeitlich gueltige Session haben
-            $objUsers = $this->Database->prepare("SELECT DISTINCT " . $llmo_name_id . ", publicFields" . $this->avatar .""
-                                               . " FROM tl_member tlm, tl_session tls" 
-                                               . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?")
-                                       ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
+            $objUsers = \Database::getInstance()
+                            ->prepare("SELECT DISTINCT 
+                                            " . $llmo_name_id . ", 
+                                            publicFields" . $this->avatar ."
+                                       FROM 
+                                            tl_member tlm, 
+                                            tl_session tls 
+                                       WHERE 
+                                            tlm.id=tls.pid 
+                                        AND 
+                                            tls.tstamp > ? 
+                                        AND tls.name = ?
+                                    ")
+                            ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
             if ($objUsers->numRows < 1) 
             {
                 $MembersOnline = $GLOBALS['TL_LANG']['last_login']['nobody'];
@@ -488,10 +518,13 @@ class LastLogin extends Frontend
                             if (in_array('avatar', $this->Config->getActiveModules())) 
                             {
                                 //avatar Modul vorhanden
-                                //Umweg damit Default Bild kommt
-                                $this->avatarFile = Avatar::filename($objUsers->avatar);
+                                //$this->avatarFile = Avatar::filename($objUsers->avatar);
                                 // username, id, Bild
-                                $arrUser[] = array($objUsers->name, $objUsers->id,Avatar::img($this->avatarFile));
+                                // C3: in tl_member.avatar ist nun die ID des Bildes
+                                $arrUser[] = array($objUsers->name, 
+                                                   $objUsers->id,
+                                                   $this->replaceInsertTags("{{avatar::".$objUsers->id."}}", true)
+                                                  );
                             }
                             break;
                         default:
@@ -502,7 +535,7 @@ class LastLogin extends Frontend
                 // unordered list
                 if ($this->arrTag[1] != 'avatar') 
                 {
-                    $objTemplate = new FrontendTemplate('mod_last_login_members_link');
+                    $objTemplate = new \FrontendTemplate('mod_last_login_members_link');
                     /*
                     <div class="mod_last_login">
                       <ul class="members_online_link">
@@ -514,7 +547,7 @@ class LastLogin extends Frontend
                 } 
                 else 
                 {
-                    $objTemplate = new FrontendTemplate('mod_last_login_members_link_avatar');
+                    $objTemplate = new \FrontendTemplate('mod_last_login_members_link_avatar');
                     /*
                     <div class="mod_last_login">
                       <ul class="members_online_link_avatar">
@@ -551,11 +584,18 @@ class LastLogin extends Frontend
     private function LL_last_login_number_registered_members ()
     {
         //number of registered members
-        $this->import('Database');
-        $objLogin = $this->Database->prepare("SELECT count(`id`) AS ANZ FROM `tl_member`" 
-                                           . " WHERE `disable`!=? AND `login`=?")
-                                   ->limit(1)
-                                   ->execute(1, 1);
+        $objLogin = \Database::getInstance()
+                        ->prepare("SELECT 
+                                        count(`id`) AS ANZ 
+                                    FROM 
+                                        `tl_member` 
+                                    WHERE 
+                                        `disable` != ? 
+                                    AND 
+                                        `login` = ?
+                                ")
+                        ->limit(1)
+                        ->execute(1, 1);
         return $objLogin->ANZ;
     }
 
@@ -567,13 +607,22 @@ class LastLogin extends Frontend
     private function LL_last_login_number_online_members ()
     {
         //number of online members
-        $this->import('Database');
         // alle die eine zeitlich gueltige Session haben
-        $objUsers = $this->Database->prepare("SELECT count(DISTINCT username) AS ANZ" 
-                                           . " FROM tl_member tlm, tl_session tls" 
-                                           . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?")
-                         ->limit(1)
-                         ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
+        $objUsers = \Database::getInstance()
+                        ->prepare("SELECT 
+                                        count(DISTINCT username) AS ANZ 
+                                   FROM 
+                                        tl_member tlm, 
+                                        tl_session tls
+                                   WHERE 
+                                        tlm.id=tls.pid 
+                                   AND 
+                                        tls.tstamp > ? 
+                                   AND 
+                                        tls.name = ?
+                                ")
+                        ->limit(1)
+                        ->execute(time() - $GLOBALS['TL_CONFIG']['sessionTimeout'], 'FE_USER_AUTH');
         if ($objUsers->numRows < 1) 
         {
             $NumberMembersOnline = 0;
@@ -592,36 +641,62 @@ class LastLogin extends Frontend
     {
         //number of offline members
         //die heute einmal Online waren und jetzt Offline sind (inaktiv oder heute abgemeldet)
-        $this->import('Database');
         //$llmo_name = 'tlm.username as name';
         $llmo = 'tlm.id';
         // Alle (aktive) 
         // abzueglich alle die eine zeitlich gueltige Session haben (online aktiv)
         // abzueglich gestern oder aelter angemeldet und wieder abgemeldet (ohne Session)
         // = offline members (lange inaktiv oder heute abgemeldet) 
-        $objUsers = $this->Database->prepare("SELECT COUNT(" . $llmo . ") as ANZ FROM tl_member tlm "
-                                          . " WHERE `disable`!=? AND `login`=? AND " . $llmo . ""
-                                          . " NOT IN ("
-                                              . " SELECT " . $llmo . ""
-                                              . " FROM tl_member tlm, tl_session tls" 
-                                              . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?"
-                                              . " )"
-                                          . " AND " . $llmo . ""
-                                          . " NOT IN (" 
-                                              . " SELECT " . $llmo . ""
-                                              . " FROM tl_member tlm" 
-                                              . " WHERE tlm.currentLogin<= ?"
-                                              . " AND " . $llmo . ""
-                                              . " NOT IN (SELECT DISTINCT pid AS id FROM tl_session"
-                                                      . " WHERE name=?)"
-                                              . " )"
+        $objUsers = \Database::getInstance()
+                        ->prepare("SELECT 
+                                        COUNT(" . $llmo . ") as ANZ 
+                                    FROM 
+                                        tl_member tlm 
+                                    WHERE 
+                                        `disable` != ? 
+                                    AND 
+                                        `login` = ? 
+                                    AND 
+                                        " . $llmo . "  NOT IN 
+                                        (
+                                        SELECT 
+                                            " . $llmo . "
+                                        FROM 
+                                            tl_member tlm, 
+                                            tl_session tls 
+                                        WHERE 
+                                            tlm.id=tls.pid 
+                                        AND 
+                                            tls.tstamp > ? 
+                                        AND 
+                                            tls.name = ?
+                                        )
+                                   AND 
+                                        " . $llmo . "  NOT IN 
+                                        ( 
+                                        SELECT 
+                                            " . $llmo . "
+                                        FROM 
+                                            tl_member tlm 
+                                        WHERE 
+                                            tlm.currentLogin <= ?
+                                        AND 
+                                            " . $llmo . "  NOT IN 
+                                            (
+                                            SELECT DISTINCT pid AS id 
+                                            FROM 
+                                                tl_session
+                                            WHERE 
+                                                name = ?
                                             )
-                                   ->execute(1,1
-                                            ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
-                                            ,'FE_USER_AUTH'
-                                            ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
-                                            ,'FE_USER_AUTH'
-                                           );
+                                        )
+                                    ")
+                        ->execute(1,1
+                                ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
+                                ,'FE_USER_AUTH'
+                                ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
+                                ,'FE_USER_AUTH'
+                               );
         $NumberMembersOffline = $objUsers->ANZ;
         return $NumberMembersOffline;
     }
@@ -637,7 +712,6 @@ class LastLogin extends Frontend
         //members offline
         if ($this->login_check) 
         {
-            $this->import('Database');
             $this->loadLanguageFile('tl_last_login');
             // ::username
             // ::firstname
@@ -683,30 +757,58 @@ class LastLogin extends Frontend
             // abzueglich alle die eine zeitlich gueltige Session haben (online aktiv)
             // abzueglich gestern oder aelter angemeldet und wieder abgemeldet (ohne Session)
             // = offline members (lange inaktiv oder heute abgemeldet) 
-            $objUsers = $this->Database->prepare("SELECT " . $llmo_name . ", publicFields" . $this->avatar . ""
-                                              . " FROM tl_member tlm " 
-                                              . " WHERE `disable`!=? AND `login`=? AND " . $llmo . ""
-                                              . " NOT IN ("
-                                                . " SELECT " . $llmo . ""
-                                                . " FROM tl_member tlm, tl_session tls"
-                                                . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?"
-                                                . " )"
-                                              . " AND " . $llmo . ""
-                                              . " NOT IN (" 
-                                                  . " SELECT " . $llmo . ""
-                                                  . " FROM tl_member tlm" 
-                                                  . " WHERE tlm.currentLogin<= ?"
-                                                  . " AND " . $llmo . ""
-                                                  . " NOT IN (SELECT DISTINCT pid AS id FROM tl_session"
-                                                          . " WHERE name=?)"
-                                                  . " )"
+            $objUsers = \Database::getInstance()
+                            ->prepare("SELECT 
+                                            " . $llmo_name . ", 
+                                            publicFields" . $this->avatar . "
+                                        FROM 
+                                            tl_member tlm 
+                                        WHERE 
+                                            `disable` != ? 
+                                        AND 
+                                            `login` = ? 
+                                        AND 
+                                            " . $llmo . "  NOT IN 
+                                            (
+                                            SELECT 
+                                                " . $llmo . "
+                                            FROM 
+                                                tl_member tlm, 
+                                                tl_session tls
+                                            WHERE 
+                                                tlm.id=tls.pid 
+                                            AND 
+                                                tls.tstamp > ? 
+                                            AND 
+                                                tls.name = ?
+                                           )
+                                        AND 
+                                            " . $llmo . "  NOT IN 
+                                            ( 
+                                            SELECT 
+                                                " . $llmo . "
+                                            FROM 
+                                                tl_member tlm 
+                                            WHERE 
+                                                tlm.currentLogin <= ?
+                                            AND 
+                                                " . $llmo . "  NOT IN 
+                                                (
+                                                    SELECT DISTINCT 
+                                                        pid AS id 
+                                                    FROM 
+                                                        tl_session
+                                                    WHERE 
+                                                        name = ?
                                                 )
-                                        ->execute(1,1
-                                                 ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
-                                                 ,'FE_USER_AUTH'
-                                                 ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
-                                                 ,'FE_USER_AUTH'
-                                                );
+                                            )
+                                        ")
+                            ->execute(1,1
+                                     ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
+                                     ,'FE_USER_AUTH'
+                                     ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
+                                     ,'FE_USER_AUTH'
+                                    );
             if ($objUsers->numRows < 1) 
             {
                 $MembersOnline = $GLOBALS['TL_LANG']['last_login']['nobody'];
@@ -748,9 +850,10 @@ class LastLogin extends Frontend
                             if (in_array('avatar', $this->Config->getActiveModules())) 
                             {
                                 //avatar Modul vorhanden
-                                //Umweg damit Default Bild kommt
-                                $this->avatarFile = Avatar::filename($objUsers->avatar);
-                                $arrUser[] = Avatar::img($this->avatarFile);
+                                // C3: in tl_member.avatar ist nun die ID des Bildes
+                                //$this->avatarFile = Avatar::filename($objUsers->avatar);
+                                //$arrUser[] = Avatar::img($this->avatarFile);
+                                $arrUser[] = $this->replaceInsertTags("{{avatar::".$objUsers->id."}}", true);
                             }
                             break;
                         default:
@@ -769,7 +872,7 @@ class LastLogin extends Frontend
                     </ul>
                     </div>
                     */
-                    $objTemplate = new FrontendTemplate('mod_last_login_members_offline');
+                    $objTemplate = new \FrontendTemplate('mod_last_login_members_offline');
                     if (isset($this->arrTag[3])) 
                     {
                         $objTemplate->count = (int) $this->arrTag[3];
@@ -803,7 +906,6 @@ class LastLogin extends Frontend
         //members offline link
         if ($this->login_check) 
         {
-            $this->import('Database');
             $this->loadLanguageFile('tl_last_login');
             // ::username
             // ::firstname
@@ -849,30 +951,58 @@ class LastLogin extends Frontend
             // abzueglich alle die eine zeitlich gueltige Session haben (online aktiv)
             // abzueglich gestern oder aelter angemeldet und wieder abgemeldet (ohne Session)
             // = offline members (lange inaktiv oder heute abgemeldet) 
-            $objUsers = $this->Database->prepare("SELECT " . $llmo_name . ", publicFields" . $this->avatar . ""
-                                              . " FROM tl_member tlm "
-                                              . " WHERE `disable`!=? AND `login`=? AND " . $llmo . ""
-                                              . " NOT IN ("
-                                                . " SELECT " . $llmo . ""
-                                                . " FROM tl_member tlm, tl_session tls"
-                                                . " WHERE tlm.id=tls.pid AND tls.tstamp>? AND tls.name=?"
-                                                . " )"
-                                              . " AND " . $llmo . ""
-                                              . " NOT IN (" 
-                                                  . " SELECT " . $llmo . ""
-                                                  . " FROM tl_member tlm" 
-                                                  . " WHERE tlm.currentLogin<= ?"
-                                                  . " AND " . $llmo . ""
-                                                  . " NOT IN (SELECT DISTINCT pid AS id FROM tl_session"
-                                                          . " WHERE name=?)"
-                                                  . " )"
-                                                )
-                                        ->execute(1,1
-                                                 ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
-                                                 ,'FE_USER_AUTH'
-                                                 ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
-                                                 ,'FE_USER_AUTH'
-                                                );
+            $objUsers = \Database::getInstance()
+                            ->prepare("SELECT 
+                                            " . $llmo_name . ", 
+                                            publicFields" . $this->avatar . "
+                                        FROM 
+                                            tl_member tlm 
+                                        WHERE 
+                                            `disable` != ? 
+                                        AND 
+                                            `login` = ? 
+                                        AND 
+                                            " . $llmo . "  NOT IN 
+                                            (
+                                                SELECT 
+                                                    " . $llmo . "
+                                                FROM 
+                                                    tl_member tlm, 
+                                                    tl_session tls
+                                                WHERE 
+                                                    tlm.id=tls.pid 
+                                                AND 
+                                                    tls.tstamp > ? 
+                                                AND 
+                                                    tls.name = ?
+                                            )
+                                        AND 
+                                            " . $llmo . "  NOT IN 
+                                            (
+                                                SELECT 
+                                                    " . $llmo . "
+                                                FROM 
+                                                    tl_member tlm 
+                                                WHERE 
+                                                    tlm.currentLogin<= ?
+                                                AND 
+                                                    " . $llmo . "  NOT IN 
+                                                    (
+                                                        SELECT DISTINCT 
+                                                            pid AS id 
+                                                        FROM 
+                                                            tl_session
+                                                        WHERE 
+                                                            name = ?
+                                                    )
+                                           )
+                                        ")
+                            ->execute(1,1
+                                     ,time() - $GLOBALS['TL_CONFIG']['sessionTimeout']
+                                     ,'FE_USER_AUTH'
+                                     ,mktime(0, 0, 0, date("m"), date("d"), date("Y"))
+                                     ,'FE_USER_AUTH'
+                                    );
             if ($objUsers->numRows < 1) 
             {
                 $MembersOffline = $GLOBALS['TL_LANG']['last_login']['nobody'];
@@ -914,10 +1044,13 @@ class LastLogin extends Frontend
                             if (in_array('avatar', $this->Config->getActiveModules())) 
                             {
                                 //avatar Modul vorhanden
-                                //Umweg damit Default Bild kommt
-                                $this->avatarFile = Avatar::filename($objUsers->avatar);
+                                //$this->avatarFile = Avatar::filename($objUsers->avatar);
                                 // username, id, Bild
-                                $arrUser[] = array($objUsers->name, $objUsers->id, Avatar::img($this->avatarFile));
+                                // C3: in tl_member.avatar ist nun die ID des Bildes
+                                $arrUser[] = array($objUsers->name, 
+                                                   $objUsers->id, 
+                                                   $this->replaceInsertTags("{{avatar::".$objUsers->id."}}", true)
+                                                  );
                             }
                             break;
                         default:
@@ -928,7 +1061,7 @@ class LastLogin extends Frontend
                 // unordered list
                 if ($this->arrTag[1] != 'avatar') 
                 {
-                    $objTemplate = new FrontendTemplate('mod_last_login_members_offline_link');
+                    $objTemplate = new \FrontendTemplate('mod_last_login_members_offline_link');
                     /*
                     <div class="mod_last_login_offline">
                     <ul class="members_offline_link">
@@ -940,7 +1073,7 @@ class LastLogin extends Frontend
                 } 
                 else 
                 {
-                    $objTemplate = new FrontendTemplate('mod_last_login_members_offline_link_avatar');
+                    $objTemplate = new \FrontendTemplate('mod_last_login_members_offline_link_avatar');
                     /*
                     <div class="mod_last_login_offline">
                     <ul class="members_offline_link_avatar">
@@ -971,5 +1104,3 @@ class LastLogin extends Frontend
 
 } // class
 
-
-?>
