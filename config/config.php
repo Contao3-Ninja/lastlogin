@@ -1,15 +1,15 @@
 <?php 
 
 /**
- * Contao Open Source CMS, Copyright (C) 2005-2013 Leo Feyer
+ * Contao Open Source CMS, Copyright (C) 2005-2014 Leo Feyer
  *
  * Utility LastLogin - Config
  * 
- * @copyright  Glen Langer 2013 <http://www.contao.glen-langer.de>
+ * @copyright  Glen Langer 2013..2014 <http://www.contao.glen-langer.de>
  * @author     Glen Langer (BugBuster)
  * @package    LastLogin
  * @license    LGPL
- * @version    3.0.0
+ * @version    3.2.0
  * @filesource
  * @see	       https://github.com/BugBuster1701/lastlogin
  */

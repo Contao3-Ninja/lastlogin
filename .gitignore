@@ -1,3 +1,5 @@
 .svn/
 wiki/
+# Transifex
+/.tx/
 

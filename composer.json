@@ -1,0 +1,47 @@
+{
+	"name":"bugbuster/lastlogin",
+	"description":"Contao CMS LastLogin and MembersOnline",
+	"keywords":["lastlogin","membersonline","login","members"],
+	"type":"contao-module",
+	"homepage":"http://www.contao.glen-langer.de",
+	"license":"LGPL-3.0+",
+	"authors":[
+		{
+			"name":"Glen Langer",
+			"homepage":"http://www.contao.glen-langer.de",
+			"role":"Developer"
+		}
+	],
+	"support":{
+		"issues":"https://github.com/BugBuster1701/lastlogin/issues",
+		"irc":"irc://irc.freenode.org/contao.dev",
+		"source":"https://github.com/BugBuster1701/lastlogin",
+		"wiki":"http://de.contaowiki.org/LastLogin",
+		"forum":"https://community.contao.org/de/forumdisplay.php?119-Sonstige-Erweiterungen"
+	},
+	"require":{
+		"php":">=5.3",
+		"contao/core":">=3.2,<4",
+		"contao-community-alliance/composer-plugin": "*",
+		"contao-legacy/memberlist":"~1.3"
+	},
+	"autoload":{
+		"classmap":[""]
+	},
+	"replace":{
+		"contao-legacy/lastlogin":"*"
+	},
+	"extra":{
+		"contao":{
+			"sources":{
+				"":"system/modules/lastlogin"
+			},
+			"transifex": {
+				"project": "contao-lastlogin",
+				"prefix": "master-",
+				"languages_cto": "languages",
+				"languages_tx": ".tx"
+			}
+		}
+	}
+}
