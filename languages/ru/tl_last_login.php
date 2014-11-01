@@ -4,13 +4,14 @@
  * or to help to maintain an existing one, please register at transifex.com.
  *
  * @link http://help.transifex.com/intro/translating.html
- * @link https://www.transifex.com/projects/p/contao-lastlogin/language/de/
+ * @link https://www.transifex.com/projects/p/contao-lastlogin/language/ru/
  *
  * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  *
- * last-updated: 2013-12-28T16:32:13+01:00
+ * last-updated: 2014-11-02T00:40:25+01:00
  */
 
 
-$GLOBALS['TL_LANG']['MOD']['lastlogin'] = 'Last Login';
+$GLOBALS['TL_LANG']['last_login']['nobody']  = 'Никого';
+$GLOBALS['TL_LANG']['last_login']['profile'] = 'Вид профиля';
 

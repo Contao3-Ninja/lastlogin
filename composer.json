@@ -1,7 +1,7 @@
 {
 	"name":"bugbuster/lastlogin",
 	"description":"Contao CMS LastLogin and MembersOnline",
-	"keywords":["lastlogin","membersonline","login","members"],
+	"keywords":["contao","lastlogin","membersonline","login","members"],
 	"type":"contao-module",
 	"homepage":"http://www.contao.glen-langer.de",
 	"license":"LGPL-3.0+",
@@ -29,7 +29,7 @@
 		"classmap":[""]
 	},
 	"replace":{
-		"contao-legacy/lastlogin":"*"
+		"contao-legacy/lastlogin":"self.version"
 	},
 	"extra":{
 		"contao":{

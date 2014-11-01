@@ -1,26 +1,17 @@
-<?php 
-
+<?php
 /**
- * Contao Open Source CMS
- * 
- * Utility LastLogin
- * 
- * LastLogin language file (en).
+ * Translations are managed using Transifex. To create a new translation
+ * or to help to maintain an existing one, please register at transifex.com.
  *
- * @copyright  Glen Langer 2013 <http://www.contao.glen-langer.de>
- * @author     Glen Langer (BugBuster)
- * @package    LastLogin
- * @license    LGPL
- * @version    3.0.0
- * @filesource
- * @see	       https://github.com/BugBuster1701/lastlogin
+ * @link http://help.transifex.com/intro/translating.html
+ * @link https://www.transifex.com/projects/p/contao-lastlogin/language/en/
+ *
+ * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
+ *
+ * last-updated: 2013-12-28T16:32:13+01:00
  */
 
 
-
-/**
- * Default
- */
 $GLOBALS['TL_LANG']['last_login']['nobody']  = 'Nobody';
 $GLOBALS['TL_LANG']['last_login']['profile'] = 'Profile view';
 
