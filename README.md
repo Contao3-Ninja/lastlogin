@@ -1,5 +1,6 @@
 Contao Module LastLogin
 =======================
+[![Latest Stable Version](https://poser.pugx.org/bugbuster/lastlogin/v/stable.svg)](https://packagist.org/packages/bugbuster/lastlogin) [![Total Downloads](https://poser.pugx.org/bugbuster/lastlogin/downloads.svg)](https://packagist.org/packages/bugbuster/lastlogin) [![Latest Unstable Version](https://poser.pugx.org/bugbuster/lastlogin/v/unstable.svg)](https://packagist.org/packages/bugbuster/lastlogin) [![License](https://poser.pugx.org/bugbuster/lastlogin/license.svg)](https://packagist.org/packages/bugbuster/lastlogin)
 
 Display the "Last Login" time and "online members" by using Insert-Tags. 
 
