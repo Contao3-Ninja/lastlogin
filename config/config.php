@@ -5,7 +5,7 @@
  *
  * Utility LastLogin - Config
  * 
- * @copyright  Glen Langer 2013..2014 <http://www.contao.glen-langer.de>
+ * @copyright  Glen Langer 2013..2014 <https://contao.ninja>
  * @author     Glen Langer (BugBuster)
  * @package    LastLogin
  * @license    LGPL

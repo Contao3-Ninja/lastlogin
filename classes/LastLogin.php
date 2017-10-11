@@ -5,7 +5,7 @@
  *
  * Utility LastLogin
  *
- * @copyright  Glen Langer 2013..2014 <http://www.contao.glen-langer.de>
+ * @copyright  Glen Langer 2013..2014 <https://contao.ninja>
  * @author     Glen Langer (BugBuster)
  * @package    LastLogin
  * @license    LGPL
@@ -95,7 +95,7 @@ namespace BugBuster\LastLogin;
  * {{cache_last_login_members_offline_link::avatar::memberlist::5}}
  * 
  * 
- * @copyright  Glen Langer 2013 <http://www.contao.glen-langer.de>
+ * @copyright  Glen Langer 2013 <https://contao.ninja>
  * @author     Glen Langer (BugBuster)
  * @package    LastLogin
  */
