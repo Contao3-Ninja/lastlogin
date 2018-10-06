@@ -139,10 +139,12 @@ class LastLogin extends \Frontend
         {
             $this->avatar = ',avatar'; //tested with avatar 2.0.4 stable
         }
-        
-        if (FE_USER_LOGGED_IN) 
+
+        if (defined('FE_USER_LOGGED_IN'))
         {
-            $this->login_check = true;
+            if (true === FE_USER_LOGGED_IN) {
+                $this->login_check = true;
+            }	
         } 
         else 
         {
